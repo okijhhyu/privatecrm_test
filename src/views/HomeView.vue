@@ -172,35 +172,37 @@ function sortData() {
     })
     filteredData.value = sortedData.value
   } else if (route.query.order === 'endAccross') {
-    const today = new Date().setHours(0, 0, 0, 0)
+    const today = new Date().setHours(0, 0, 0, 0);
     sortedData.value = quickSort(route.query.dates ? filteredData.value : data, (a, b) => {
       const aArray = a.dates.filter((date) => new Date(date.end_date).getTime() - today > 0)
       const bArray = b.dates.filter((date) => new Date(date.end_date).getTime() - today > 0)
       const firstDate = Math.min(
-        ...(aArray.length ? aArray : a.dates.map((date) => new Date(date.end_date).getTime()))
+        ...(aArray.length ? aArray : a.dates).map((date) => new Date(date.end_date).getTime())
       )
       const secondDate = Math.min(
-        ...(bArray.length ? bArray : b.dates.map((date) => new Date(date.end_date).getTime()))
+        ...(bArray.length ? bArray : b.dates).map((date) => new Date(date.end_date).getTime())
       )
       const daysDiffA = Math.ceil((firstDate - today) / (1000 * 60 * 60 * 24))
       const daysDiffB = Math.ceil((secondDate - today) / (1000 * 60 * 60 * 24))
-      if (daysDiffA <= 0) {
+       if (daysDiffA <= 0 && daysDiffB > 0) {
         return 1
+      } else if (daysDiffA > 0 && daysDiffB <= 0) {
+        return -1
+      } else {
+        return daysDiffA - daysDiffB
       }
-
-      return daysDiffA - daysDiffB
     })
     filteredData.value = sortedData.value
   } else if (route.query.order === 'endedAccross') {
     const today = new Date().setHours(0, 0, 0, 0)
     sortedData.value = quickSort(route.query.dates ? filteredData.value : data, (a, b) => {
-      const aArray = a.dates.filter((date) => today - new Date(date.end_date).getTime() > 0)
-      const bArray = b.dates.filter((date) => today - new Date(date.end_date).getTime() > 0)
+      const aArray = a.dates.filter((date) => (today - new Date(date.end_date).getTime()) > 0)
+      const bArray = b.dates.filter((date) => (today - new Date(date.end_date).getTime()) > 0)
       const firstDate = Math.min(
-        ...(aArray.length ? aArray : a.dates.map((date) => new Date(date.end_date).getTime()))
+        ...(aArray.length ? aArray : a.dates).map((date) => new Date(date.end_date).getTime())
       )
       const secondDate = Math.min(
-        ...(bArray.length ? bArray : b.dates.map((date) => new Date(date.end_date).getTime()))
+        ...(bArray.length ? bArray : b.dates).map((date) => new Date(date.end_date).getTime())
       )
       const daysDiffA = Math.ceil((today - firstDate) / (1000 * 60 * 60 * 24))
       const daysDiffB = Math.ceil((today - secondDate) / (1000 * 60 * 60 * 24))
